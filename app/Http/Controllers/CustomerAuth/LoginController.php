@@ -1,8 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\Auth;
+namespace App\Http\Controllers\CustomerAuth;
+use App\Customer;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Auth;
+use Illuminate\Http\Request;
 
 class LoginController extends Controller
 {
@@ -24,7 +27,7 @@ class LoginController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/home';
+    protected $redirectTo = '/customer_home';
 
     /**
      * Create a new controller instance.
@@ -35,6 +38,34 @@ class LoginController extends Controller
     {
         $this->middleware('guest', ['except' => 'logout']);
     }
-	
-	
+    /**
+     * Show the application's login form.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function showLoginForm()
+    {
+    	return view('customer-auth.login');
+    }
+    
+    /**
+     * Get the guard to be used during authentication.
+     *
+     * @return \Illuminate\Contracts\Auth\StatefulGuard
+     */
+    protected function guard()
+    {
+    	return Auth::guard('customer');
+    }
+    
+    public function logout(Request $request)
+    {
+    	$this->guard()->logout();
+    
+    	$request->session()->flush();
+    
+    	$request->session()->regenerate();
+    
+    	return redirect('/customer_login');
+    }
 }
